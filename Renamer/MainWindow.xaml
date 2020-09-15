@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Renamer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="220" Width="400" Background="#FF09364C" FontFamily="Segoe UI Symbol" Foreground="#FFFF691F">
+        Title="MainWindow" Height="240" Width="400" Background="#FF09364C" FontFamily="Segoe UI Symbol" Foreground="#FFFF691F">
     <Grid>
         <Grid HorizontalAlignment="Left" Height="40" Margin="10,10,0,0" VerticalAlignment="Top" Width="372">
             <Label Content="Renamer" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#FFFF691F" FontFamily="Agent Orange" FontSize="14"/>
@@ -27,7 +27,8 @@
             <Label Content="Separator" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FFFF691F" FontSize="14" FontFamily="Segoe UI Light" Margin="42,53,42,19"/>
             <TextBox x:Name="toSeparatorTextBox" HorizontalAlignment="Center" Height="20" TextWrapping="Wrap" Text="-" VerticalAlignment="Center" Width="20" Background="#FF09364C" Foreground="#FFFF691F" TextAlignment="Center" Margin="65,78,65,2"/>
         </Grid>
-        <Button Content="Rename" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="76" Margin="158,0,158,30" Background="#FFFF691F" Foreground="#FF09364C" Click="OnRenameClick"/>
+        <Button Content="Rename" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="76" Margin="158,0,158,51" Background="#FFFF691F" Foreground="#FF09364C" Click="OnRenameClick"/>
+        <CheckBox Content="Delete duplicates" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="#FFFF691F" Margin="140,0,140,30" Name="deleteDuplicatesCheckBox" IsChecked="True"/>
         <Label Name="executionMessage" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="#FFA3FF1F" FontSize="14" FontFamily="Segoe UI Light"/>
     </Grid>
 </Window>
