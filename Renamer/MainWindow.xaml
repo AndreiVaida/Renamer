@@ -27,7 +27,7 @@
             <Label Content="Separator" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FFFF691F" FontSize="14" FontFamily="Segoe UI Light" Margin="42,53,42,19"/>
             <TextBox x:Name="toSeparatorTextBox" HorizontalAlignment="Center" Height="20" TextWrapping="Wrap" Text="-" VerticalAlignment="Center" Width="20" Background="#FF09364C" Foreground="#FFFF691F" TextAlignment="Center" Margin="65,78,65,2"/>
         </Grid>
-        <Button Content="Rename" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="76" Margin="158,0,158,51" Background="#FFFF691F" Foreground="#FF09364C" Click="OnRenameClick"/>
+        <Button Content="Rename" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="76" Margin="158,0,158,51" Background="#FFFF691F" Foreground="#FF09364C" Click="OnRenameFoldersClick"/>
         <CheckBox Content="Delete duplicates" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="#FFFF691F" Margin="140,0,140,30" Name="deleteDuplicatesCheckBox" IsChecked="True"/>
         <Label Name="executionMessage" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="#FFA3FF1F" FontSize="14" FontFamily="Segoe UI Light"/>
     </Grid>
