@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Renamer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="313" Width="400" Background="#FF09364C" FontFamily="Segoe UI Symbol" Foreground="#FFFF691F">
+        Title="MainWindow" Height="347" Width="400" Background="#FF09364C" FontFamily="Segoe UI Symbol" Foreground="#FFFF691F">
     <Grid>
         <Grid HorizontalAlignment="Left" Height="40" Margin="10,10,0,0" VerticalAlignment="Top" Width="372">
             <Label Content="Renamer" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#FFFF691F" FontFamily="Agent Orange" FontSize="14"/>
@@ -27,10 +27,17 @@
             <Label Content="Separator" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FFFF691F" FontSize="14" FontFamily="Segoe UI Light" Margin="42,53,42,19"/>
             <TextBox x:Name="toSeparatorTextBox" HorizontalAlignment="Center" Height="20" TextWrapping="Wrap" Text="-" VerticalAlignment="Center" Width="20" Background="#FF09364C" Foreground="#FFFF691F" TextAlignment="Center" Margin="65,78,65,2"/>
         </Grid>
-        <Button Content="Rename folders" HorizontalAlignment="Center" VerticalAlignment="Top" Width="76" Margin="0,169,0,0" Background="#FFFF691F" Foreground="#FF09364C" Click="OnRenameFoldersClick"/>
+        <Button Content="Rename folders" HorizontalAlignment="Center" VerticalAlignment="Top" Width="111" Margin="0,169,0,0" Background="#FFFF691F" Foreground="#FF09364C" Click="OnRenameFoldersClick"/>
         <CheckBox Content="Delete duplicates" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#FFFF691F" Margin="0,194,0,0" Name="deleteDuplicatesCheckBox" IsChecked="True"/>
 
         <Button Content="Rename files to time name" HorizontalAlignment="Center" VerticalAlignment="Top" Width="165" Margin="0,227,0,0" Background="#FFFF691F" Foreground="#FF09364C" Click="OnRenameFilesClick"/>
+        <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,252,0,0">
+            <Button Content="Cleanup pictures:" Width="111" Background="#e3554b" Foreground="#FF09364C" Click="OnCleanupPicturesClick"/>
+            <CheckBox Name="cleanupRawCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="#e3554b" IsChecked="True">RAW</CheckBox>
+            <CheckBox Name="cleanupUneditedJpgCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="#e3554b">Unedited JPG</CheckBox>
+            <CheckBox Name="cleanupVideoCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="#e3554b" IsChecked="True">Video</CheckBox>
+        </WrapPanel>
+        
         <Label Name="executionMessage" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="#FFA3FF1F" FontSize="14" FontFamily="Segoe UI Light"/>
     </Grid>
 </Window>

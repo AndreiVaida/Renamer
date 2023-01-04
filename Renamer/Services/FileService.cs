@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using Directory = System.IO.Directory;
 using Image = System.Drawing.Image;
 using System.Drawing.Imaging;
+using Microsoft.VisualBasic.FileIO;
 
 namespace Renamer.Services
 {
@@ -19,6 +20,8 @@ namespace Renamer.Services
         private const string ShortcutSuffix = " - Shortcut.lnk";
         private const int DateLenght = 8;
         private const int TimeLenght = 6; // 20220806_144753
+        private readonly List<string> RawFileExtensions = new List<string> { ".CR2", ".ARW", ".dng", ".tif" };
+        private readonly List<string> VideoFileExtensions = new List<string> { ".mp4" };
         private static readonly Regex colonRegex = new Regex(":");
 
         public FileService(string workingFolderPath, Label executionMessage)
@@ -62,6 +65,33 @@ namespace Renamer.Services
 
             _executionMessage.Content = $"Renamed: {sonyFilesCount} Sony, {canonFilesCount} Canon. Found {unknownFiles.Count} unknown: {string.Join(", ", unknownFiles)}";
         }
+
+        public void DeleteOriginalImages(bool deleteRaw, bool deleteUneditedJpg, bool deleteVideo) {
+            var originalImages = GetOriginalImages(deleteRaw, deleteUneditedJpg, deleteVideo);
+            MoveFilesToRecycleBin(originalImages);
+
+            var nrOfRaw = originalImages.Where(IsRaw).Count();
+            var nrOfUneditedJpg = originalImages.Where(IsUneditedJpg).Count();
+            var nrOfVideo = originalImages.Where(IsVideo).Count();
+            _executionMessage.Content = $"Cleanup complete: {nrOfRaw} RAW, {nrOfUneditedJpg} unedited JPG, {nrOfVideo} video";
+        }
+
+        private List<string> GetOriginalImages(bool deleteRaw, bool deleteUneditedJpg, bool deleteVideo) =>
+            Directory.GetFiles(_workingFolderPath)
+                     .Where(file => deleteRaw && IsRaw(file)
+                                 || deleteUneditedJpg && IsUneditedJpg(file)
+                                 || deleteVideo && IsVideo(file))
+                     .ToList();
+
+        private bool IsRaw(string fileName) => RawFileExtensions.Any(extension => fileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase));
+
+        private bool IsUneditedJpg(string fileName) => IsJpg(fileName) && !IsEdited(fileName);
+
+        private bool IsJpg(string fileName) => fileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase);
+
+        private bool IsEdited(string fileName) => fileName.Contains("-");
+
+        private bool IsVideo(string fileName) => VideoFileExtensions.Any(extension => fileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase));
 
         private List<string> GetNonSmartphoneFiles() =>
             Directory.GetFiles(_workingFolderPath)
@@ -129,6 +159,15 @@ namespace Renamer.Services
             IWshRuntimeLibrary.WshShell shell = new IWshRuntimeLibrary.WshShell();
             IWshRuntimeLibrary.IWshShortcut link = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(fileName);
             return link.TargetPath;
+        }
+
+        private void MoveFilesToRecycleBin(List<string> files) {
+            foreach (var file in files) {
+                FileSystem.DeleteFile(file,
+                                      UIOption.OnlyErrorDialogs,
+                                      RecycleOption.SendToRecycleBin,
+                                      UICancelOption.ThrowException);
+            }
         }
     }
 }

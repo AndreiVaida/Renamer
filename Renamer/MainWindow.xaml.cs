@@ -24,6 +24,8 @@ namespace Renamer
 
         private void OnRenameFilesClick(object sender, RoutedEventArgs e) => RenameFiles();
 
+        private void OnCleanupPicturesClick(object sender, RoutedEventArgs e) => CleanupPictures();
+
         private void RenameFolders()
         {
             var fromSeparator = fromSeparatorTextBox.Text[0];
@@ -32,5 +34,12 @@ namespace Renamer
         }
 
         private void RenameFiles() => _fileService.RenameFilesNameToTimeName();
+
+        private void CleanupPictures() {
+            bool deleteRaw = cleanupRawCheckBox.IsChecked ?? false;
+            bool deleteUneditedJpg = cleanupUneditedJpgCheckBox.IsChecked ?? false;
+            bool deleteVideo = cleanupVideoCheckBox.IsChecked ?? false;
+            _fileService.DeleteOriginalImages(deleteRaw, deleteUneditedJpg, deleteVideo);
+        }
     }
 }
