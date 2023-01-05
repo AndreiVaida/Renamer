@@ -32,10 +32,10 @@
 
         <Button Content="Rename files to time name" HorizontalAlignment="Center" VerticalAlignment="Top" Width="165" Margin="0,227,0,0" Background="#FFFF691F" Foreground="#FF09364C" Click="OnRenameFilesClick"/>
         <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,252,0,0">
-            <Button Content="Cleanup pictures:" Width="111" Background="#e3554b" Foreground="#FF09364C" Click="OnCleanupPicturesClick"/>
-            <CheckBox Name="cleanupRawCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="#e3554b" IsChecked="True">RAW</CheckBox>
-            <CheckBox Name="cleanupUneditedJpgCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="#e3554b">Unedited JPG</CheckBox>
-            <CheckBox Name="cleanupVideoCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="#e3554b" IsChecked="True">Video</CheckBox>
+            <Button Content="Cleanup pictures:" Width="111" Background="#bd190d" Foreground="White" Click="OnCleanupPicturesClick"/>
+            <CheckBox Name="cleanupRawCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="White" IsChecked="True">RAW</CheckBox>
+            <CheckBox Name="cleanupUneditedJpgCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="White">Unedited JPG</CheckBox>
+            <CheckBox Name="cleanupVideoCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="White" IsChecked="True">Video</CheckBox>
         </WrapPanel>
         
         <Label Name="executionMessage" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="#FFA3FF1F" FontSize="14" FontFamily="Segoe UI Light"/>

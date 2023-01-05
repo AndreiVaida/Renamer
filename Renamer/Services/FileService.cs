@@ -78,6 +78,7 @@ namespace Renamer.Services
 
         private List<string> GetOriginalImages(bool deleteRaw, bool deleteUneditedJpg, bool deleteVideo) =>
             Directory.GetFiles(_workingFolderPath)
+                     .Select(Path.GetFileName)
                      .Where(file => deleteRaw && IsRaw(file)
                                  || deleteUneditedJpg && IsUneditedJpg(file)
                                  || deleteVideo && IsVideo(file))
