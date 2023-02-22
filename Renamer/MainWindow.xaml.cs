@@ -26,8 +26,9 @@ namespace Renamer
 
         private void OnCleanupPicturesClick(object sender, RoutedEventArgs e) => CleanupPictures();
 
-        private void RenameFolders()
-        {
+        private void OnCleanupFoldersClick(object sender, RoutedEventArgs e) => CleanupBuildFolders();
+
+        private void RenameFolders() {
             var fromSeparator = fromSeparatorTextBox.Text[0];
             var toSeparator = toSeparatorTextBox.Text[0];
             _folderService.RenameFolders(fromSeparator, toSeparator, executionMessage);
@@ -40,6 +41,10 @@ namespace Renamer
             bool deleteUneditedJpg = cleanupUneditedJpgCheckBox.IsChecked ?? false;
             bool deleteVideo = cleanupVideoCheckBox.IsChecked ?? false;
             _fileService.DeleteOriginalImages(deleteRaw, deleteUneditedJpg, deleteVideo);
+        }
+
+        private void CleanupBuildFolders() {
+            _folderService.DeleteBuildFolders(executionMessage);
         }
     }
 }

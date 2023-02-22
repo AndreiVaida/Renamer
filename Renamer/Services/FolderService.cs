@@ -5,6 +5,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.VisualBasic.FileIO;
+using FileSystem = Microsoft.VisualBasic.FileIO.FileSystem;
+using SearchOption = System.IO.SearchOption;
 
 namespace Renamer.Services
 {
@@ -13,6 +15,7 @@ namespace Renamer.Services
         private readonly string _workingFolderPath;
         private HashSet<string> _foldersWithConflicts;
         private readonly CheckBox _deleteDuplicatesCheckBox;
+        private readonly List<string> _buildAndBinFolders = new List<string> { "build", "bin", "obj", "packages", "node_modules" };
 
         public FolderService(string workingFolderPath, CheckBox deleteDuplicatesCheckBox)
         {
@@ -44,6 +47,27 @@ namespace Renamer.Services
 
             if (_foldersWithConflicts.Count > 0 && _deleteDuplicatesCheckBox.IsChecked == false)
                 AllertFoldersWithConflicts();
+        }
+
+        public void DeleteBuildFolders(Label executionMessage) {
+            var foldersToSkip = new List<string> { "Platforms", ".git", ".idea", ".vs" };
+            var buildAndBinFolders = GetBuildAndBinFolders(foldersToSkip);
+
+            var errors = new List<string>();
+
+            foreach (var folder in buildAndBinFolders)
+                try
+                {
+                    MoveFolderToRecycleBin(folder);
+                }
+                catch (Exception exception)
+                {
+                    errors.Add(exception.Message);
+                }
+
+            var errorMessage = errors.Any() ? $"{errors.Count} errors: {string.Join("\n", errors)}" : "OK";
+            var nrOfFoldersDeleted = buildAndBinFolders.Count - errors.Count;
+            executionMessage.Content = $"Cleanup complete: {nrOfFoldersDeleted} folders deleted. {errorMessage}";
         }
 
         private HashSet<string> GetFoldersToRename(char fromSeparator) =>
@@ -98,8 +122,45 @@ namespace Renamer.Services
                 MoveFolderToRecycleBin(folderPath);
         }
 
-        private static void MoveFolderToRecycleBin(string oldFolderPath) =>
-            FileSystem.DeleteDirectory(oldFolderPath,
+        private List<string> GetBuildAndBinFolders(List<string> foldersNameToSkip)
+        {
+            var allPaths = Directory.GetDirectories(_workingFolderPath, "*", SearchOption.AllDirectories)
+                .Where(folderPath => !foldersNameToSkip.Any(folderPath.Contains))
+                .Where(folderPath => _buildAndBinFolders.Any(buildFolderName => Path.GetFileName(folderPath) == buildFolderName))
+                .OrderByDescending(path => path.Length)
+                .ToList();
+
+            return ExtractOnlyUniquePaths(allPaths);
+        }
+
+        private static List<string> ExtractOnlyUniquePaths(List<string> allPaths)
+        {
+            var uniquePaths = new List<string>();
+
+            for (var i = 0; i < allPaths.Count; i++)
+            {
+                var path = allPaths[i];
+                if (!IsIncludedInShorterPath(allPaths, path, i))
+                    uniquePaths.Add(path);
+            }
+
+            return uniquePaths;
+        }
+
+        private static bool IsIncludedInShorterPath(List<string> allPaths, string path, int pathIndex)
+        {
+            for (var j = pathIndex + 1; j < allPaths.Count; j++)
+            {
+                var shorterPath = allPaths[j];
+                if (path.Contains(shorterPath))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static void MoveFolderToRecycleBin(string folderPath) =>
+            FileSystem.DeleteDirectory(folderPath,
                                        UIOption.OnlyErrorDialogs,
                                        RecycleOption.SendToRecycleBin,
                                        UICancelOption.ThrowException);

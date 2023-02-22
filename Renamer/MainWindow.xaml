@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Renamer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="347" Width="400" Background="#FF09364C" FontFamily="Segoe UI Symbol" Foreground="#FFFF691F">
+        Title="MainWindow" Height="380" Width="480" Background="#FF09364C" FontFamily="Segoe UI Symbol" Foreground="#FFFF691F">
     <Grid>
         <Grid HorizontalAlignment="Left" Height="40" Margin="10,10,0,0" VerticalAlignment="Top" Width="372">
             <Label Content="Renamer" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#FFFF691F" FontFamily="Agent Orange" FontSize="14"/>
@@ -37,6 +37,7 @@
             <CheckBox Name="cleanupUneditedJpgCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="White">Unedited JPG</CheckBox>
             <CheckBox Name="cleanupVideoCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="White" IsChecked="True">Video</CheckBox>
         </WrapPanel>
+        <Button Content="Cleanup build folders" Width="150" Height="20" Background="#bd190d" Foreground="White" Click="OnCleanupFoldersClick" Margin="165,277,165,0" VerticalAlignment="Top"/>
         
         <Label Name="executionMessage" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="#FFA3FF1F" FontSize="14" FontFamily="Segoe UI Light"/>
     </Grid>
