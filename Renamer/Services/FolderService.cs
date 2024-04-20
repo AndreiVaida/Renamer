@@ -15,7 +15,9 @@ namespace Renamer.Services
         private readonly string _workingFolderPath;
         private HashSet<string> _foldersWithConflicts;
         private readonly CheckBox _deleteDuplicatesCheckBox;
-        private readonly List<string> _buildAndBinFolders = new List<string> { "build", "bin", "obj", "packages", "node_modules" };
+        private readonly List<string> _foldersToDelete = new List<string> { "build", "bin", "obj", "packages", "node_modules", "milestone", "logs" };
+        private readonly List<string>  _foldersToNotDelete = new List<string> { "Platforms", ".git", ".idea", ".vs" };
+        private readonly List<string>  _foldersToDeleteInsideProtectedFolders = new List<string> { "logs" };
 
         public FolderService(string workingFolderPath, CheckBox deleteDuplicatesCheckBox)
         {
@@ -46,12 +48,11 @@ namespace Renamer.Services
             executionMessage.Content = $"Renamed {renamed} folders";
 
             if (_foldersWithConflicts.Count > 0 && _deleteDuplicatesCheckBox.IsChecked == false)
-                AllertFoldersWithConflicts();
+                AlertFoldersWithConflicts();
         }
 
         public void DeleteBuildFolders(Label executionMessage) {
-            var foldersToSkip = new List<string> { "Platforms", ".git", ".idea", ".vs" };
-            var buildAndBinFolders = GetBuildAndBinFolders(foldersToSkip);
+            var buildAndBinFolders = GetBuildAndBinFolders(_foldersToNotDelete);
 
             var errors = new List<string>();
 
@@ -125,8 +126,9 @@ namespace Renamer.Services
         private List<string> GetBuildAndBinFolders(List<string> foldersNameToSkip)
         {
             var allPaths = Directory.GetDirectories(_workingFolderPath, "*", SearchOption.AllDirectories)
-                .Where(folderPath => !foldersNameToSkip.Any(folderPath.Contains))
-                .Where(folderPath => _buildAndBinFolders.Any(buildFolderName => Path.GetFileName(folderPath) == buildFolderName))
+                .Where(folderPath => !foldersNameToSkip.Any(folderPath.Contains) ||
+                                     (foldersNameToSkip.Any(folderPath.Contains) && _foldersToDeleteInsideProtectedFolders.Any(folderPath.Contains)))
+                .Where(folderPath => _foldersToDelete.Any(buildFolderName => Path.GetFileName(folderPath) == buildFolderName))
                 .OrderByDescending(path => path.Length)
                 .ToList();
 
@@ -165,7 +167,7 @@ namespace Renamer.Services
                                        RecycleOption.SendToRecycleBin,
                                        UICancelOption.ThrowException);
 
-        private void AllertFoldersWithConflicts() =>
+        private void AlertFoldersWithConflicts() =>
             MessageBox.Show($"There were some conflicts in the following folders:\n\n{string.Join("\n", _foldersWithConflicts)}", "Info");
     }
 }
