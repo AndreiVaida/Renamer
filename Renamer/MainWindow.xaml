@@ -34,7 +34,7 @@
         <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,252,0,0">
             <Button Content="Cleanup pictures:" Width="111" Background="#bd190d" Foreground="White" Click="OnCleanupPicturesClick"/>
             <CheckBox Name="cleanupRawCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="White" IsChecked="True">RAW</CheckBox>
-            <CheckBox Name="cleanupUneditedJpgCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="White">Unedited JPG</CheckBox>
+            <CheckBox Name="cleanupUneditedJpgCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="White" IsChecked="True">Unedited JPG</CheckBox>
             <CheckBox Name="cleanupVideoCheckBox" VerticalAlignment="Center" Margin="5 0" Foreground="White" IsChecked="True">Video</CheckBox>
         </WrapPanel>
         

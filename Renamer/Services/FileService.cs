@@ -67,22 +67,29 @@ namespace Renamer.Services
         }
 
         public void DeleteOriginalImages(bool deleteRaw, bool deleteUneditedJpg, bool deleteVideo) {
-            var originalImages = GetOriginalImages(deleteRaw, deleteUneditedJpg, deleteVideo);
-            MoveFilesToRecycleBin(originalImages);
+            var originalImagesPaths = GetOriginalImages(deleteRaw, deleteUneditedJpg, deleteVideo);
+            MoveFilesToRecycleBin(originalImagesPaths);
 
-            var nrOfRaw = originalImages.Where(IsRaw).Count();
-            var nrOfUneditedJpg = originalImages.Where(IsUneditedJpg).Count();
-            var nrOfVideo = originalImages.Where(IsVideo).Count();
+            var originalImagesNames = originalImagesPaths.Select(Path.GetFileName);
+            var nrOfRaw = originalImagesNames.Where(IsRaw).Count();
+            var nrOfUneditedJpg = originalImagesNames.Where(IsUneditedJpg).Count();
+            var nrOfVideo = originalImagesNames.Where(IsVideo).Count();
             _executionMessage.Content = $"Cleanup complete: {nrOfRaw} RAW, {nrOfUneditedJpg} unedited JPG, {nrOfVideo} video";
         }
 
         private List<string> GetOriginalImages(bool deleteRaw, bool deleteUneditedJpg, bool deleteVideo) =>
-            Directory.GetFiles(_workingFolderPath)
-                     .Select(Path.GetFileName)
-                     .Where(file => deleteRaw && IsRaw(file)
-                                 || deleteUneditedJpg && IsUneditedJpg(file)
-                                 || deleteVideo && IsVideo(file))
+            Directory.GetFiles(_workingFolderPath, "*.*", System.IO.SearchOption.AllDirectories)
+                     .Where(path => !IsWatermark(path))
+                     .Where(path => {
+                         var file = Path.GetFileName(path);
+                         return deleteRaw && IsRaw(file)
+                         || deleteUneditedJpg && IsUneditedJpg(file)
+                         || deleteVideo && IsVideo(file)
+                         || IsMetadata(file);
+                     })
                      .ToList();
+
+        private bool IsWatermark(string path) => path.Contains("Watermark");
 
         private bool IsRaw(string fileName) => RawFileExtensions.Any(extension => fileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase));
 
@@ -93,6 +100,8 @@ namespace Renamer.Services
         private bool IsEdited(string fileName) => fileName.Contains("-");
 
         private bool IsVideo(string fileName) => VideoFileExtensions.Any(extension => fileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase));
+
+        private bool IsMetadata(string fileName) => fileName.EndsWith(".sfk", StringComparison.OrdinalIgnoreCase);
 
         private List<string> GetNonSmartphoneFiles() =>
             Directory.GetFiles(_workingFolderPath)
