@@ -10,6 +10,7 @@ using Directory = System.IO.Directory;
 using Image = System.Drawing.Image;
 using System.Drawing.Imaging;
 using Microsoft.VisualBasic.FileIO;
+using Shell32;
 
 namespace Renamer.Services
 {
@@ -166,9 +167,13 @@ namespace Renamer.Services
 
         private string GetFilePathFromShortcut(string fileName)
         {
-            IWshRuntimeLibrary.WshShell shell = new IWshRuntimeLibrary.WshShell();
-            IWshRuntimeLibrary.IWshShortcut link = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(fileName);
-            return link.TargetPath;
+            var directoryPath = Directory.GetCurrentDirectory();
+            var fullShortcutPath = Path.Combine(directoryPath, fileName);
+            var shell = new Shell();
+            var folder = shell.NameSpace(Path.GetDirectoryName(fullShortcutPath));
+            var folderItem = folder.Items().Item(Path.GetFileName(fileName));
+            var currentLink = (ShellLinkObject)folderItem.GetLink;
+            return currentLink.Path;
         }
 
         private void MoveFilesToRecycleBin(List<string> files) {
