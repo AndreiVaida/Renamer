@@ -11,9 +11,9 @@ using Image = System.Drawing.Image;
 using System.Drawing.Imaging;
 using Microsoft.VisualBasic.FileIO;
 using Shell32;
+using Microsoft.WindowsAPICodePack.Shell;
 
-namespace Renamer.Services
-{
+namespace Renamer.Services {
     public class FileService
     {
         private readonly string _workingFolderPath;
@@ -35,6 +35,7 @@ namespace Renamer.Services
         {
             var sonyFilesCount = 0;
             var canonFilesCount = 0;
+            var xiaomiMiMax3FilesCount = 0;
             var unknownFiles = new List<string>();
 
             var files = GetNonSmartphoneFiles();
@@ -53,6 +54,11 @@ namespace Renamer.Services
                         RenameCanonFile(fileName);
                         canonFilesCount++;
                     }
+                    else if (IsXiaomiMiMax3File(fileName))
+                    {
+                        RenameXiaomiMiMax3File(fileName);
+                        xiaomiMiMax3FilesCount++;
+                    }
                     else
                     {
                         unknownFiles.Add(fileName);
@@ -64,7 +70,7 @@ namespace Renamer.Services
                 }
             }
 
-            _executionMessage.Content = $"Renamed: {sonyFilesCount} Sony, {canonFilesCount} Canon. Found {unknownFiles.Count} unknown: {string.Join(", ", unknownFiles)}";
+            _executionMessage.Content = $"Renamed: {sonyFilesCount} Sony, {canonFilesCount} Canon, {xiaomiMiMax3FilesCount} XiaomiMiMax3. Found {unknownFiles.Count} unknown: {string.Join(", ", unknownFiles)}";
         }
 
         public void DeleteOriginalImages(bool deleteRaw, bool deleteUneditedJpg, bool deleteVideo) {
@@ -128,9 +134,10 @@ namespace Renamer.Services
             return name;
         }
 
-        private bool IsSonyHDRCX405File(string fileName) => fileName.All(char.IsDigit);
+        private bool IsSonyHDRCX405File(string fileName) => fileName.StartsWith("20") && fileName.All(char.IsDigit);
         private bool IsCanonFile(string fileName) => fileName.StartsWith("IMG_");
         private bool IsSonyA6600File(string fileName) => fileName.StartsWith("DSC") || fileName.StartsWith("C"); // Date taken + Date modified
+        private bool IsXiaomiMiMax3File(string fileName) => !fileName.StartsWith("20") && fileName.All(character => char.IsDigit(character) || character == '-');
 
         private void RenameSonyFile(string fileName)
         {
@@ -147,15 +154,33 @@ namespace Renamer.Services
             RenameShortcut(fileName, newName);
         }
 
+        private void RenameXiaomiMiMax3File(string fileName)
+        {
+            var originalFilePath = GetFilePathFromShortcut(fileName + ShortcutSuffix);
+            var dateTime = IsJpg(originalFilePath)
+                ? GetDateTakenFromImage(originalFilePath)
+                : GetDateMediaCreated(originalFilePath);
+
+            var newName = $"{dateTime.Year}{dateTime.Month:D2}{dateTime.Day:D2}_{dateTime.Hour:D2}{dateTime.Minute:D2}{dateTime.Second:D2} - {fileName}";
+            RenameShortcut(fileName, newName);
+        }
+
         public static DateTime GetDateTakenFromImage(string path)
         {
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-            using (Image myImage = Image.FromStream(fs, false, false))
+            using (var myImage = Image.FromStream(fs, false, false))
             {
                 PropertyItem propItem = myImage.GetPropertyItem(36867);
                 string dateTaken = colonRegex.Replace(Encoding.UTF8.GetString(propItem.Value), "-", 2);
                 return DateTime.Parse(dateTaken);
             }
+        }
+
+        public static DateTime GetDateMediaCreated(string path)
+        {
+            var shell = ShellObject.FromParsingName(path);
+            var mediaCreatedDate = shell.Properties.System.Media.DateEncoded;
+            return mediaCreatedDate.Value.Value;
         }
 
         private void RenameShortcut(string fileName, string newName)
