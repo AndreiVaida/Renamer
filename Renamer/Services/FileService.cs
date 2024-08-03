@@ -54,6 +54,11 @@ namespace Renamer.Services {
                         RenameCanonFile(fileName);
                         canonFilesCount++;
                     }
+                    else if (IsXiaomiMiMax3IncognitoFile(fileName))
+                    {
+                        RenameXiaomiMiMax3IncognitoFile(fileName);
+                        xiaomiMiMax3FilesCount++;
+                    }
                     else if (IsXiaomiMiMax3File(fileName))
                     {
                         RenameXiaomiMiMax3File(fileName);
@@ -135,9 +140,16 @@ namespace Renamer.Services {
         }
 
         private bool IsSonyHDRCX405File(string fileName) => fileName.StartsWith("20") && fileName.All(char.IsDigit);
-        private bool IsCanonFile(string fileName) => fileName.StartsWith("IMG_");
+        private bool IsCanonFile(string fileName) => fileName.StartsWith("IMG_") && Has4DigitName(fileName.Substring(4));
         private bool IsSonyA6600File(string fileName) => fileName.StartsWith("DSC") || fileName.StartsWith("C"); // Date taken + Date modified
-        private bool IsXiaomiMiMax3File(string fileName) => !fileName.StartsWith("20") && fileName.All(character => char.IsDigit(character) || character == '-');
+        private bool IsXiaomiMiMax3IncognitoFile(string fileName) => !fileName.StartsWith("20") && fileName.All(character => char.IsDigit(character) || character == '-');
+        private bool IsXiaomiMiMax3File(string fileName) => fileName.StartsWith("IMG_") && HasDateName(fileName)
+                                                            || fileName.StartsWith("VID_");
+
+        // Input example: 4275-1
+        private bool Has4DigitName(string name) => name.Length <= 4 || !char.IsDigit(name[4]);
+        // Input example: 20200818_193630-1
+        private bool HasDateName(string name) => name.Length >= 8 + 1 + 6 || name.Where((char c, int i) => i != 8 && i < 8 + 1 + 6).All(c => char.IsDigit(c));
 
         private void RenameSonyFile(string fileName)
         {
@@ -154,7 +166,7 @@ namespace Renamer.Services {
             RenameShortcut(fileName, newName);
         }
 
-        private void RenameXiaomiMiMax3File(string fileName)
+        private void RenameXiaomiMiMax3IncognitoFile(string fileName)
         {
             var originalFilePath = GetFilePathFromShortcut(fileName + ShortcutSuffix);
             var dateTime = IsJpg(originalFilePath)
@@ -162,6 +174,11 @@ namespace Renamer.Services {
                 : GetDateMediaCreated(originalFilePath);
 
             var newName = $"{dateTime.Year}{dateTime.Month:D2}{dateTime.Day:D2}_{dateTime.Hour:D2}{dateTime.Minute:D2}{dateTime.Second:D2} - {fileName}";
+            RenameShortcut(fileName, newName);
+        }
+
+        private void RenameXiaomiMiMax3File(string fileName) {
+            var newName = $"{fileName.Substring(4)} - {fileName}";
             RenameShortcut(fileName, newName);
         }
 
