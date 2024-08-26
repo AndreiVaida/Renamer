@@ -33,8 +33,9 @@ namespace Renamer.Services {
 
         public void RenameFilesNameToTimeName()
         {
-            var sonyFilesCount = 0;
+            var sonyHDRCX405FilesCount = 0;
             var canonFilesCount = 0;
+            var sonyA6600FilesCount = 0;
             var xiaomiMiMax3FilesCount = 0;
             var unknownFiles = new List<string>();
 
@@ -46,13 +47,18 @@ namespace Renamer.Services {
                 {
                     if (IsSonyHDRCX405File(fileName))
                     {
-                        RenameSonyFile(fileName);
-                        sonyFilesCount++;
+                        RenameSonyHDRCX405File(fileName);
+                        sonyHDRCX405FilesCount++;
                     }
                     else if (IsCanonFile(fileName))
                     {
                         RenameCanonFile(fileName);
                         canonFilesCount++;
+                    }
+                    else if (IsSonyA6600File(fileName))
+                    {
+                        RenameSonyA6600File(fileName);
+                        sonyA6600FilesCount++;
                     }
                     else if (IsXiaomiMiMax3IncognitoFile(fileName))
                     {
@@ -75,7 +81,7 @@ namespace Renamer.Services {
                 }
             }
 
-            _executionMessage.Content = $"Renamed: {sonyFilesCount} Sony, {canonFilesCount} Canon, {xiaomiMiMax3FilesCount} XiaomiMiMax3. Found {unknownFiles.Count} unknown: {string.Join(", ", unknownFiles)}";
+            _executionMessage.Content = $"Renamed: {sonyHDRCX405FilesCount} SonyHDRCX405, {canonFilesCount} Canon, {sonyA6600FilesCount} SonyA6600, {xiaomiMiMax3FilesCount} XiaomiMiMax3. Found {unknownFiles.Count} unknown: {string.Join(", ", unknownFiles)}";
         }
 
         public void DeleteOriginalImages(bool deleteRaw, bool deleteUneditedJpg, bool deleteVideo) {
@@ -141,7 +147,9 @@ namespace Renamer.Services {
 
         private bool IsSonyHDRCX405File(string fileName) => fileName.StartsWith("20") && fileName.All(char.IsDigit);
         private bool IsCanonFile(string fileName) => fileName.StartsWith("IMG_") && Has4DigitName(fileName.Substring(4));
-        private bool IsSonyA6600File(string fileName) => fileName.StartsWith("DSC") || fileName.StartsWith("C"); // Date taken + Date modified
+        private bool IsSonyA6600File(string fileName) => IsSonyA6600Photo(fileName) || IsSonyA6600Video(fileName);
+        private bool IsSonyA6600Photo(string fileName) => fileName.StartsWith("DSC");
+        private bool IsSonyA6600Video(string fileName) => fileName.StartsWith("C");
         private bool IsXiaomiMiMax3IncognitoFile(string fileName) => !fileName.StartsWith("20") && fileName.All(character => char.IsDigit(character) || character == '-');
         private bool IsXiaomiMiMax3File(string fileName) => fileName.StartsWith("IMG_") && HasDateName(fileName)
                                                             || fileName.StartsWith("VID_");
@@ -151,7 +159,7 @@ namespace Renamer.Services {
         // Input example: 20200818_193630-1
         private bool HasDateName(string name) => name.Length >= 8 + 1 + 6 || name.Where((char c, int i) => i != 8 && i < 8 + 1 + 6).All(c => char.IsDigit(c));
 
-        private void RenameSonyFile(string fileName)
+        private void RenameSonyHDRCX405File(string fileName)
         {
             var newName = fileName.Insert(DateLenght, "_") + " - Sony";
             RenameShortcut(fileName, newName);
@@ -161,6 +169,17 @@ namespace Renamer.Services {
         {
             var originalFilePath = GetFilePathFromShortcut(fileName + ShortcutSuffix);
             var dateTime = GetDateTakenFromImage(originalFilePath);
+
+            var newName = $"{dateTime.Year}{dateTime.Month:D2}{dateTime.Day:D2}_{dateTime.Hour:D2}{dateTime.Minute:D2}{dateTime.Second:D2} - {fileName}";
+            RenameShortcut(fileName, newName);
+        }
+
+        private void RenameSonyA6600File(string fileName)
+        {
+            var originalFilePath = GetFilePathFromShortcut(fileName + ShortcutSuffix);
+            var dateTime = IsSonyA6600Photo(fileName)
+                ? GetDateTakenFromImage(originalFilePath)
+                : GetDateMediaCreated(originalFilePath);
 
             var newName = $"{dateTime.Year}{dateTime.Month:D2}{dateTime.Day:D2}_{dateTime.Hour:D2}{dateTime.Minute:D2}{dateTime.Second:D2} - {fileName}";
             RenameShortcut(fileName, newName);
