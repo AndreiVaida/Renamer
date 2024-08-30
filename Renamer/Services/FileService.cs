@@ -161,7 +161,7 @@ namespace Renamer.Services {
 
         private void RenameSonyHDRCX405File(string fileName)
         {
-            var newName = fileName.Insert(DateLenght, "_") + " - Sony";
+            var newName = fileName.Insert(DateLenght, "_") + " - SonyHDRCX405";
             RenameShortcut(fileName, newName);
         }
 
@@ -217,6 +217,24 @@ namespace Renamer.Services {
             var shell = ShellObject.FromParsingName(path);
             var mediaCreatedDate = shell.Properties.System.Media.DateEncoded;
             return mediaCreatedDate.Value.Value;
+        }
+
+        // var correctDateString = AdjustSonyHDRCX405Date(fileName, 7, 11);
+        private static string AdjustSonyHDRCX405Date(string fileName, int minutes, int seconds)
+        {
+            var dateString = fileName.Substring(0, DateLenght);
+            var timeString = fileName.Substring(DateLenght, TimeLenght);
+
+            var year = int.Parse(dateString.Substring(0, 4));
+            var month = int.Parse(dateString.Substring(4, 2));
+            var day = int.Parse(dateString.Substring(6, 2));
+            var hour = int.Parse(timeString.Substring(0, 2));
+            var minute = int.Parse(timeString.Substring(2, 2));
+            var second = int.Parse(timeString.Substring(4, 2));
+            var recordedTime = new DateTime(year, month, day, hour, minute, second);
+
+            var correctDate = recordedTime.AddMinutes(minutes).AddSeconds(seconds);
+            return $"{correctDate.Year}{correctDate.Month:D2}{correctDate.Day:D2}{correctDate.Hour:D2}{correctDate.Minute:D2}{correctDate.Second:D2}";
         }
 
         private void RenameShortcut(string fileName, string newName)
