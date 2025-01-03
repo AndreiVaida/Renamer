@@ -219,7 +219,7 @@ namespace Renamer.Services {
             return mediaCreatedDate.Value.Value;
         }
 
-        // var correctDateString = AdjustSonyHDRCX405Date(fileName, 7, 11);
+        // var correctDateString = AdjustSonyHDRCX405Date(fileName, 7, 25);
         private static string AdjustSonyHDRCX405Date(string fileName, int minutes, int seconds)
         {
             var dateString = fileName.Substring(0, DateLenght);
