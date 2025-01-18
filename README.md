@@ -17,13 +17,16 @@ This app has 3 roles for manage (normalize) photos and videos made by various ca
 3. **Delete original footage**.
    - only edited photos are kept from current folder and its subfolders
    - a photo is considered edited if it contains the `-` character
-   - remove: RAW (`.CR2`, `.ARW`, `.dng`, `.tif`), unedited JPG, video (`.mp4`)
+   - remove: RAW (`.CR2`, `.ARW`, `.dng`, `.tif`), unedited `.jpg`, video (`.mp4`)
 
 Download the executable: https://drive.google.com/drive/folders/1jRGDC-J8TB_M-BRELUQnkWROjGm3s4oI?usp=sharing
 <br><br>
 ![Screenshot](https://github.com/AndreiVaida/Renamer/blob/master/Resources/Renamer_2024.08.30.png?raw=true "Screenshot")
 ## Instructions
-1. copy _Renamer.exe_ in the folder you want to rename/clean the files
+1. copy _Renamer.exe_ in the folder you want to rename/clean the files <br>
+    also copy for videos of _Xiaomi Mi Max 3 incognito_ & _Sony a6600_:
+      - `Microsoft.WindowsAPICodePack.Core.dll`
+      - `Microsoft.WindowsAPICodePack.Shell.dll`
 2. click on the desired button
 3. wait to finish, even if the window froze
 4. the result is displayed at the bottom of the window with green text, and errors are shown in a MessageBox
