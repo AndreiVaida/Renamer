@@ -113,7 +113,7 @@ namespace Renamer.Services {
 
         private bool IsUneditedJpg(string fileName) => IsJpg(fileName) && !IsEdited(fileName);
 
-        private bool IsJpg(string fileName) => fileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase);
+        private bool IsJpg(string fileName) => new[]{ ".jpg", ".jpeg" }.Any(extension => fileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase));
 
         private bool IsEdited(string fileName) => fileName.Contains("-");
 
